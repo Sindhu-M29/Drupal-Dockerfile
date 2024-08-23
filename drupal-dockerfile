@@ -1,0 +1,24 @@
+# Use the latest Drupal base image
+FROM drupal:latest
+
+# Set environment variables (optional, adjust as needed)
+ENV DRUPAL_FILES_DIR=/var/www/html
+
+# Copy local folders to the Drupal container
+COPY sites $DRUPAL_FILES_DIR/sites
+COPY themes $DRUPAL_FILES_DIR/themes
+COPY profiles $DRUPAL_FILES_DIR/profiles
+COPY modules $DRUPAL_FILES_DIR/modules
+
+# Change ownership of the copied directories to www-data
+# www-data is the default user for the web server in the Drupal container
+RUN chown -R www-data:www-data $DRUPAL_FILES_DIR/sites \
+    && chown -R www-data:www-data $DRUPAL_FILES_DIR/themes \
+    && chown -R www-data:www-data $DRUPAL_FILES_DIR/profiles \
+    && chown -R www-data:www-data $DRUPAL_FILES_DIR/modules
+
+# Expose the default Drupal port
+EXPOSE 80
+
+# Run the Apache server in the foreground
+CMD ["apache2-foreground"]
